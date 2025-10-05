@@ -1,40 +1,57 @@
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
-using ull = unsigned long long;
-const int N = 2e5 + 9;
-const int INF = 2e9;
+const int N = 2e3;
+int n, m, cnt[N], d[N];
 struct Node {
     int x, w;
 };
 vector<Node> g[N];
-ll d[N];
-void solve() {
-    int n, m; cin >> n >> m;
-    for (int i = 1; i <= m; i++) {
-        int u, v, w; cin >> u >> v >> w;
-        g[u].push_back({v, w});
-    }
-    for (int i = 2; i <= n; i++) d[i] = INF;
-    bool circle = false;
-    for (int i = 1; i <= n; i++) {
-        circle = false;
-        for (int x = 1; x <= n; x++) {
-            for (auto [y, w] : g[x]) {
-                if (d[x] + w < d[y]) {
-                    d[y] = d[x] + w;
-                    circle = true;
+bool BellmanFord(int st) {
+    memset(cnt, 0, sizeof cnt);
+    memset(d, 0x3f, sizeof d);
+    queue<int> q;
+    bitset<N> vis;
+    d[st] = 0;
+    q.push(st);
+    while (!q.empty()) {
+        int x = q.front(); q.pop();
+        vis[x] = false;
+        for (auto &[y, w] : g[x]) {
+            if (d[y] > d[x] + w) {
+                d[y] = d[x] + w;
+                cnt[y] = cnt[x] + 1;
+                if (cnt[y] >= n) return true;
+                if (!vis[y]) {
+                    q.push(y);
+                    vis[y] = true;
                 }
             }
         }
     }
-    if (circle) cout << -1 << '\n';
-    else for (int i = 1; i <= n; i++) cout << d[i] << ' ';
+    return false;
+}
+
+void solve() {
+    cin >> n >> m;
+    for (int i = 1; i <= m; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        g[u].push_back({v, w});
+        if (w >= 0)
+            g[v].push_back({u, w});
+    }
+    if (BellmanFord(1)) cout << "YES\n";
+    else cout << "NO\n";
+    for (int i = 1; i <= n; i++) {
+        g[i].clear();
+    }
     return;
 }
 int main() {
-    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
-    int t = 1; //cin >> t;
-    while(t--) solve();
+    ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+    int t; cin >> t;
+    while(t--)
+        solve();
     return 0;
 }
