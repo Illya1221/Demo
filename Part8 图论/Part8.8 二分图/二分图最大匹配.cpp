@@ -28,8 +28,9 @@ void solve() {
     for (int i = 1; i <= n; i++) {
         dfn++;
         if (dfs(i)) ans++;
+        else ans--;
     }
-    cout << ans;
+    cout << ans * 200;
     return;
 }
 int main() {
